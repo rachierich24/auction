@@ -193,7 +193,7 @@ export function AdminSidebar({
           {open ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
         <Link href="/admin" className="font-display text-lg text-console-ink">
-          Groovy
+          Groovy&rsquo;s
           <span className="ml-1.5 align-super text-[0.5rem] uppercase tracking-[0.2em] text-accent-soft">
             Console
           </span>
@@ -218,7 +218,7 @@ export function AdminSidebar({
       >
         <div className="flex h-16 shrink-0 items-center border-b border-console-line px-6">
           <Link href="/admin" className="font-display text-xl text-console-ink">
-            Groovy
+            Groovy&rsquo;s
             <span className="ml-1.5 align-super text-[0.5rem] uppercase tracking-[0.2em] text-accent-soft">
               Console
             </span>

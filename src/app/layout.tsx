@@ -22,12 +22,12 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Groovy Auction — Bid. Win. Own.",
-    template: "%s · Groovy Auction",
+    default: "Groovy's Auction — Bid. Win. Own.",
+    template: "%s · Groovy's Auction",
   },
   description:
     "A curated saleroom for collectors of horology, fine art, automobiles and rare objects. Live, server-timed bidding with a complete public bid ledger.",
-  applicationName: "Groovy Auction",
+  applicationName: "Groovy's Auction",
   keywords: [
     "auction",
     "live auction",
@@ -38,15 +38,15 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: "website",
-    siteName: "Groovy Auction",
-    title: "Groovy Auction — Bid. Win. Own.",
+    siteName: "Groovy's Auction",
+    title: "Groovy's Auction — Bid. Win. Own.",
     description:
       "A curated saleroom for collectors. Live, server-timed bidding with a complete public bid ledger.",
     url: siteUrl,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Groovy Auction — Bid. Win. Own.",
+    title: "Groovy's Auction — Bid. Win. Own.",
     description:
       "A curated saleroom for collectors. Live, server-timed bidding with a complete public bid ledger.",
   },

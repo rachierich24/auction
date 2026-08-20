@@ -6,7 +6,7 @@ import { getContent } from "@/lib/content/site-content";
 export const metadata: Metadata = {
   title: "Conditions of sale",
   description:
-    "The terms on which Groovy Auction accepts bids, closes lots, applies reserves and buyer's premium, and settles sales.",
+    "The terms on which Groovy's Auction accepts bids, closes lots, applies reserves and buyer's premium, and settles sales.",
   alternates: { canonical: "/terms" },
 };
 
@@ -106,7 +106,7 @@ export default async function TermsPage() {
     <LegalPage
       eyebrow="Legal"
       title="Conditions of sale"
-      intro="These conditions govern bidding and buying at Groovy Auction. By registering and placing a bid you agree to them."
+      intro="These conditions govern bidding and buying at Groovy's Auction. By registering and placing a bid you agree to them."
       clauses={clauses}
     />
   );

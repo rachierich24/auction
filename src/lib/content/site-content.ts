@@ -130,11 +130,11 @@ export const CONTENT_DEFAULTS: { [K in ContentKey]: ContentValue<K> } = {
   },
 
   footer: {
-    blurb: "Groovy Auction is an independent saleroom for collectors of horology, fine art, automobiles and rare objects.",
+    blurb: "Groovy's Auction is an independent saleroom for collectors of horology, fine art, automobiles and rare objects.",
     email: "saleroom@groovy.auction",
     phone: "+91 22 4000 1200",
     address: "14 Ballard Estate, Mumbai 400001, India",
-    legalName: "Groovy Auction",
+    legalName: "Groovy's Auction",
   },
 
   newsletter: {

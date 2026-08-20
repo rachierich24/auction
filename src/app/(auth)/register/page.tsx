@@ -9,7 +9,7 @@ import { getSessionUser } from "@/lib/auth/session";
 export const metadata: Metadata = {
   title: "Register to bid",
   description:
-    "Create a Groovy Auction account. Registration is free and takes under a minute.",
+    "Create a Groovy's Auction account. Registration is free and takes under a minute.",
   alternates: { canonical: "/register" },
 };
 

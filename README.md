@@ -1,4 +1,4 @@
-# Groovy Auction
+# Groovy's Auction
 
 A production-shaped auction platform: a public saleroom with live bidding, and
 an operations console for running sales.

@@ -43,7 +43,7 @@ export default function GlobalError({
               margin: 0,
             }}
           >
-            Groovy Auction
+            Groovy's Auction
           </p>
 
           <h1

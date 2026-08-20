@@ -1,5 +1,5 @@
 // ---------------------------------------------------------------------------
-// Groovy Auction — data model
+// Groovy's Auction — data model
 //
 // MONEY: every monetary column is a BigInt count of the currency's *minor
 // unit* (paise for INR). No floats touch money anywhere in this codebase.

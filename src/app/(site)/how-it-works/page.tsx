@@ -9,7 +9,7 @@ import { getContent } from "@/lib/content/site-content";
 export const metadata: Metadata = {
   title: "How it works",
   description:
-    "How bidding, increments, reserves, anti-snipe extensions, buyer's premium and settlement work at Groovy Auction.",
+    "How bidding, increments, reserves, anti-snipe extensions, buyer's premium and settlement work at Groovy's Auction.",
   alternates: { canonical: "/how-it-works" },
 };
 
