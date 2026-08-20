@@ -420,12 +420,22 @@ export async function reconcileAuctions(
 export async function runScheduledTasks(now = new Date()) {
   const opened = await openDueAuctions(now);
   const closed = await closeDueAuctions(now);
-  const warned = await notifyClosingSoon(now);
+
+  // `notifyClosingSoon` is deliberately NOT called here.
+  //
+  // It warns about lots closing within the next 15 minutes, which only makes
+  // sense on a sweep that runs at least that often. On the daily schedule in
+  // vercel.json it would fire once at midnight and warn about almost nothing,
+  // so it is noise rather than a feature. Opening and closing are unaffected:
+  // both are also handled opportunistically on read (see `reconcileAuctions`),
+  // and this sweep is the safety net for lots nobody happens to look at.
+  //
+  // To switch it on, move the cron to every minute or two and add:
+  //   const warned = await notifyClosingSoon(now);
 
   return {
     at: now.toISOString(),
     opened,
     closed: closed.filter((outcome) => outcome.status !== "SKIPPED"),
-    warned,
   };
 }

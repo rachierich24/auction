@@ -74,8 +74,12 @@ export type AuctionFormValues = {
 
 /** Blank form for a new lot, with sensible saleroom defaults. */
 export function emptyAuctionValues(lotNumber: string): AuctionFormValues {
-  const start = new Date(Date.now() + 60 * 60 * 1000);
-  const end = new Date(Date.now() + 8 * 24 * 60 * 60 * 1000);
+  // Opens as soon as it is published. Publishing a lot whose start time has
+  // already passed sends it straight to LIVE, so listing an item and starting
+  // the bidding is a single action — no scheduling, no second click. Set a
+  // future date here instead if a lot should open later.
+  const start = new Date();
+  const end = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
   return {
     title: "",

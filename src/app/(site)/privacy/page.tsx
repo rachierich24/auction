@@ -6,7 +6,7 @@ import { getContent } from "@/lib/content/site-content";
 export const metadata: Metadata = {
   title: "Privacy",
   description:
-    "What personal data Maison Auctions collects, why, how long it is kept, and the choices you have.",
+    "What personal data Groovy Auction collects, why, how long it is kept, and the choices you have.",
   alternates: { canonical: "/privacy" },
 };
 

@@ -163,13 +163,13 @@ const BIDDER_PASSWORD = "Collector!2026";
 const STAFF = [
   {
     name: "Devika Raghunathan",
-    email: "admin@maison.auction",
+    email: "admin@groovy.auction",
     role: "SUPER_ADMIN",
   },
-  { name: "Imran Sheikh", email: "ops@maison.auction", role: "AUCTION_MANAGER" },
+  { name: "Imran Sheikh", email: "ops@groovy.auction", role: "AUCTION_MANAGER" },
   {
     name: "Leela Krishnan",
-    email: "editor@maison.auction",
+    email: "editor@groovy.auction",
     role: "CONTENT_MANAGER",
   },
 ];
@@ -1133,9 +1133,9 @@ async function main() {
   Accounts    ${users}
 
   Admin console — /admin
-    admin@maison.auction    ${ADMIN_PASSWORD}   (Super Admin)
-    ops@maison.auction      ${ADMIN_PASSWORD}   (Auction Manager)
-    editor@maison.auction   ${ADMIN_PASSWORD}   (Content Manager)
+    admin@groovy.auction    ${ADMIN_PASSWORD}   (Super Admin)
+    ops@groovy.auction      ${ADMIN_PASSWORD}   (Auction Manager)
+    editor@groovy.auction   ${ADMIN_PASSWORD}   (Content Manager)
 
   Bidders — /login
     rahul.verma@example.com ${BIDDER_PASSWORD}

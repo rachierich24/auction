@@ -375,10 +375,16 @@ export function AuctionForm({
       {/* -- Schedule ------------------------------------------------------ */}
       <Section
         title="Schedule"
-        description="Entered in your local time and stored in UTC. The server clock decides when a lot opens and closes."
+        description="Opens the moment you publish it. Change the start time only if the lot should open later. You can close a lot early at any point from its actions menu."
       >
         <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Opens" htmlFor="startAt" required error={errors.startAt}>
+          <Field
+            label="Opens"
+            htmlFor="startAt"
+            required
+            error={errors.startAt}
+            hint="Leave as-is to open on publish"
+          >
             <Input
               id="startAt"
               name="startAt"

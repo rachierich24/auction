@@ -7,7 +7,7 @@ import { cache } from "react";
 import { prisma } from "@/lib/db/prisma";
 import type { UserRole, UserStatus } from "@/lib/validation/enums";
 
-export const SESSION_COOKIE = "maison_session";
+export const SESSION_COOKIE = "groovy_session";
 
 const TTL_DAYS = Number(process.env.SESSION_TTL_DAYS ?? 30);
 const TTL_MS = TTL_DAYS * 24 * 60 * 60 * 1000;

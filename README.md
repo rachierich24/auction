@@ -1,4 +1,4 @@
-# Maison Auctions
+# Groovy Auction
 
 A production-shaped auction platform: a public saleroom with live bidding, and
 an operations console for running sales.
@@ -25,9 +25,9 @@ Open <http://localhost:3000>.
 
 | Role | Email | Password |
 |---|---|---|
-| Super Admin | `admin@maison.auction` | `Saleroom!2026` |
-| Auction Manager | `ops@maison.auction` | `Saleroom!2026` |
-| Content Manager | `editor@maison.auction` | `Saleroom!2026` |
+| Super Admin | `admin@groovy.auction` | `Saleroom!2026` |
+| Auction Manager | `ops@groovy.auction` | `Saleroom!2026` |
+| Content Manager | `editor@groovy.auction` | `Saleroom!2026` |
 | Bidder | `rahul.verma@example.com` | `Collector!2026` |
 | Bidder | `priya.nair@example.com` | `Collector!2026` |
 

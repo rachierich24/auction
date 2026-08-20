@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: { default: "Console", template: "%s · Maison Console" },
+  title: { default: "Console", template: "%s · Groovy Console" },
   robots: { index: false, follow: false },
 };
 

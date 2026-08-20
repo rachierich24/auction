@@ -43,7 +43,7 @@ export default function GlobalError({
               margin: 0,
             }}
           >
-            Maison Auctions
+            Groovy Auction
           </p>
 
           <h1

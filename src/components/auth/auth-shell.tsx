@@ -24,9 +24,9 @@ export function AuthShell({
           href="/"
           className="font-display text-[1.375rem] leading-none tracking-tight text-ink"
         >
-          Maison
+          Groovy
           <span className="ml-1.5 align-super text-[0.5rem] uppercase tracking-[0.22em] text-accent">
-            Auctions
+            Auction
           </span>
         </Link>
 
@@ -51,7 +51,7 @@ export function AuthShell({
         </div>
 
         <p className="text-xs text-faint">
-          © {new Date().getFullYear()} Maison Auctions. All rights reserved.
+          © {new Date().getFullYear()} Groovy Auction. All rights reserved.
         </p>
       </div>
 

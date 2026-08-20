@@ -9,7 +9,7 @@ import { safeRedirect } from "@/lib/validation/auth";
 
 export const metadata: Metadata = {
   title: "Sign in",
-  description: "Sign in to your Maison Auctions account to bid on live lots.",
+  description: "Sign in to your Groovy Auction account to bid on live lots.",
   robots: { index: false, follow: false },
 };
 

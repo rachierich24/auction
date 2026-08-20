@@ -17,7 +17,7 @@ interface EmailTransport {
   send(message: EmailMessage): Promise<{ id: string }>;
 }
 
-const FROM = process.env.EMAIL_FROM ?? "Maison Auctions <no-reply@maison.auction>";
+const FROM = process.env.EMAIL_FROM ?? "Groovy Auction <no-reply@groovy.auction>";
 
 /** Development default — writes the message to the server log. */
 const consoleTransport: EmailTransport = {
@@ -96,7 +96,7 @@ export function verifyEmailMessage(name: string, token: string): EmailMessage {
   const link = siteUrl(`/verify-email?token=${encodeURIComponent(token)}`);
   return {
     to: "",
-    subject: "Confirm your Maison Auctions account",
+    subject: "Confirm your Groovy Auction account",
     text: `Welcome, ${name}.
 
 Confirm your email address to start bidding:
@@ -110,7 +110,7 @@ export function passwordResetMessage(name: string, token: string): EmailMessage 
   const link = siteUrl(`/reset-password?token=${encodeURIComponent(token)}`);
   return {
     to: "",
-    subject: "Reset your Maison Auctions password",
+    subject: "Reset your Groovy Auction password",
     text: `Hello ${name},
 
 Reset your password using the link below:

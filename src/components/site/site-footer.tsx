@@ -19,9 +19,9 @@ export async function SiteFooter() {
         <div className="grid gap-12 py-16 lg:grid-cols-[1.4fr_1fr_1fr_1.3fr]">
           <div>
             <p className="font-display text-2xl leading-none tracking-tight text-ink">
-              Maison
+              Groovy
               <span className="ml-1.5 align-super text-[0.5rem] uppercase tracking-[0.22em] text-accent">
-                Auctions
+                Auction
               </span>
             </p>
             <p className="mt-5 max-w-sm text-[0.8125rem] leading-relaxed text-muted text-pretty">

@@ -21,7 +21,6 @@ async function main() {
 Scheduled tasks — ${result.at}
   Opened for bidding   ${result.opened}
   Closed and settled   ${result.closed.length}
-  Closing warnings     ${result.warned}
   Duration             ${Date.now() - started}ms`);
 
   for (const outcome of result.closed) {

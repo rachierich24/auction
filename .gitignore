@@ -15,3 +15,4 @@ public/uploads/*
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+.env*

@@ -1,5 +1,5 @@
 {
-  "name": "maison-auctions",
+  "name": "groovy-auction",
   "version": "1.0.0",
   "private": true,
   "type": "module",
@@ -15,7 +15,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "rm -f prisma/dev.db && prisma db push && tsx prisma/seed.ts",
     "close:auctions": "NODE_OPTIONS='--conditions=react-server' tsx scripts/close-auctions.ts",
-    "test:e2e-flow": "NODE_OPTIONS='--conditions=react-server' tsx scripts/e2e-flow.ts"
+    "test:e2e-flow": "NODE_OPTIONS='--conditions=react-server' tsx scripts/e2e-flow.ts",
+    "bootstrap": "tsx scripts/bootstrap.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -48,9 +48,9 @@ export function HeaderNav({
           href="/"
           className="shrink-0 font-display text-[1.375rem] leading-none tracking-tight text-ink"
         >
-          Maison
+          Groovy
           <span className="ml-1.5 align-super text-[0.5rem] uppercase tracking-[0.22em] text-accent">
-            Auctions
+            Auction
           </span>
         </Link>
 

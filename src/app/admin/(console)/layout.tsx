@@ -45,7 +45,7 @@ export default async function AdminLayout({
 
         <footer className="border-t border-line px-5 py-4 sm:px-8 lg:px-10">
           <p className="text-[0.6875rem] text-faint">
-            Maison Auctions operations console ·{" "}
+            Groovy Auction operations console ·{" "}
             <Link href="/" className="underline-offset-4 hover:text-ink hover:underline">
               View the public site
             </Link>
