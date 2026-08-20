@@ -1,0 +1,427 @@
+// ---------------------------------------------------------------------------
+// Maison Auctions — data model
+//
+// MONEY: every monetary column is a BigInt count of the currency's *minor
+// unit* (paise for INR). No floats touch money anywhere in this codebase.
+// 64-bit is not optional here: a 32-bit column would cap a lot at ~21 crore,
+// which a property or motor-car lot passes straight through. Reads are
+// normalised to JS `number` at the query boundary (safe to 2^53 minor units,
+// far beyond any hammer price) so no arithmetic mixes bigint with number.
+//
+// ENUMS: modelled as String columns validated by Zod at every boundary
+// (see src/lib/validation/enums.ts). This keeps the schema portable between
+// SQLite (local dev) and PostgreSQL (production) with no code changes.
+//
+// PORTING TO POSTGRES: change `provider` to "postgresql", point DATABASE_URL
+// at the instance, run `prisma db push`. Nothing else needs to change.
+// ---------------------------------------------------------------------------
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Identity
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String  @id @default(cuid())
+  name         String
+  email        String  @unique
+  passwordHash String
+  phone        String?
+  avatarUrl    String?
+
+  /// BIDDER | CONTENT_MANAGER | AUCTION_MANAGER | SUPER_ADMIN
+  role   String @default("BIDDER")
+  /// ACTIVE | SUSPENDED
+  status String @default("ACTIVE")
+
+  emailVerifiedAt DateTime?
+  lastLoginAt     DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions           Session[]
+  tokens             VerificationToken[]
+  bids               Bid[]
+  proxyBids          ProxyBid[]
+  watchlist          Watchlist[]
+  wins               Winner[]
+  payments           Payment[]
+  notifications      Notification[]
+  auditLogs          AuditLog[]          @relation("AuditActor")
+  leadingAuctions    Auction[]           @relation("HighestBidder")
+  authoredAuctions   Auction[]           @relation("AuctionAuthor")
+
+  @@index([role])
+  @@index([status])
+  @@index([createdAt])
+  @@map("users")
+}
+
+model Session {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// SHA-256 of the opaque session token. The raw token only ever lives in the
+  /// httpOnly cookie, so a database leak cannot be replayed as a login.
+  tokenHash String   @unique
+  expiresAt DateTime
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model VerificationToken {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// EMAIL_VERIFY | PASSWORD_RESET
+  type      String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, type])
+  @@map("verification_tokens")
+}
+
+// ---------------------------------------------------------------------------
+// Catalogue
+// ---------------------------------------------------------------------------
+
+model Category {
+  id          String  @id @default(cuid())
+  name        String
+  slug        String  @unique
+  description String?
+  image       String?
+  /// ACTIVE | HIDDEN
+  status      String  @default("ACTIVE")
+  sortOrder   Int     @default(0)
+
+  /// JSON array of dynamic specification fields rendered on the create-auction
+  /// form and the public specifications table.
+  /// [{ "key": "artist", "label": "Artist", "type": "text", "required": true }]
+  fieldSchema String @default("[]")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  auctions Auction[]
+
+  @@index([status, sortOrder])
+  @@map("categories")
+}
+
+model Auction {
+  id        String @id @default(cuid())
+  lotNumber String @unique
+  title     String
+  slug      String @unique
+
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  shortDescription String
+  description      String
+
+  // -- Pricing (minor units) ------------------------------------------------
+  startingPrice    BigInt
+  currentBid       BigInt?
+  minimumIncrement BigInt
+  reservePrice     BigInt?
+  buyerPremiumBps  Int    @default(1200) // 1200 = 12.00%
+  currency         String @default("INR")
+
+  highestBidderId String?
+  highestBidder   User?   @relation("HighestBidder", fields: [highestBidderId], references: [id], onDelete: SetNull)
+  bidCount        Int     @default(0)
+
+  // -- Schedule (always stored UTC) ----------------------------------------
+  startAt       DateTime
+  endAt         DateTime
+  /// Preserved when anti-snipe extensions push `endAt` out.
+  originalEndAt DateTime
+
+  /// DRAFT | UPCOMING | LIVE | EXTENDED | ENDED | SOLD | UNSOLD | CANCELLED
+  status String @default("DRAFT")
+
+  // -- Behaviour ------------------------------------------------------------
+  extensionEnabled      Boolean @default(true)
+  /// Bid inside this many seconds of close triggers an extension.
+  extensionThresholdSec Int     @default(120)
+  /// Seconds added to endAt when an extension triggers.
+  extensionDurationSec  Int     @default(120)
+  extensionCount        Int     @default(0)
+  proxyBiddingEnabled   Boolean @default(true)
+  watchlistEnabled      Boolean @default(true)
+  featured              Boolean @default(false)
+
+  /// JSON object of category-specific specifications, e.g.
+  /// { "artist": "Ramesh Iyer", "year": "1998", "medium": "Oil on canvas" }
+  attributes String @default("{}")
+
+  location    String?
+  shippingNote String?
+  paymentNote  String?
+
+  /// Optimistic-concurrency guard. Every accepted bid increments it; a bid
+  /// whose compare-and-set misses the expected version is rejected and retried.
+  version   Int @default(0)
+  viewCount Int @default(0)
+
+  publishedAt DateTime?
+  settledAt   DateTime?
+
+  createdById String?
+  createdBy   User?   @relation("AuctionAuthor", fields: [createdById], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  images    AuctionImage[]
+  bids      Bid[]
+  proxyBids ProxyBid[]
+  watchers  Watchlist[]
+  winner    Winner?
+  payments  Payment[]
+
+  @@index([status, endAt])
+  @@index([status, startAt])
+  @@index([categoryId, status])
+  @@index([featured, status])
+  @@index([endAt])
+  @@map("auctions")
+}
+
+model AuctionImage {
+  id String @id @default(cuid())
+
+  auctionId String
+  auction   Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  url       String
+  altText   String?
+  sortOrder Int     @default(0)
+  isPrimary Boolean @default(false)
+  width     Int?
+  height    Int?
+
+  createdAt DateTime @default(now())
+
+  @@index([auctionId, sortOrder])
+  @@map("auction_images")
+}
+
+// ---------------------------------------------------------------------------
+// Bidding
+// ---------------------------------------------------------------------------
+
+model Bid {
+  id String @id @default(cuid())
+
+  auctionId String
+  auction   Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// Minor units. Authoritative — never derived from a client-supplied total.
+  amount BigInt
+
+  /// WINNING | OUTBID | WON | LOST | RETRACTED
+  status String @default("WINNING")
+
+  /// True when placed by the proxy engine on the bidder's behalf.
+  isAutoBid Boolean @default(false)
+
+  ip        String?
+  createdAt DateTime @default(now())
+
+  /// Two bidders can never land the same amount on the same lot. This is the
+  /// database-level backstop behind the transactional compare-and-set.
+  @@unique([auctionId, amount])
+  @@index([auctionId, createdAt])
+  @@index([userId, createdAt])
+  @@index([status])
+  @@map("bids")
+}
+
+model ProxyBid {
+  id String @id @default(cuid())
+
+  auctionId String
+  auction   Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// Ceiling the engine will bid up to on the user's behalf (minor units).
+  maxAmount BigInt
+  active    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([auctionId, userId])
+  @@index([auctionId, maxAmount])
+  @@map("proxy_bids")
+}
+
+model Watchlist {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  auctionId String
+  auction   Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, auctionId])
+  @@index([auctionId])
+  @@map("watchlists")
+}
+
+// ---------------------------------------------------------------------------
+// Settlement
+// ---------------------------------------------------------------------------
+
+model Winner {
+  id String @id @default(cuid())
+
+  auctionId String  @unique
+  auction   Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  winningBidId  String
+  winningAmount BigInt
+  buyerPremium  BigInt
+  totalDue      BigInt
+
+  /// PAYMENT_PENDING | PAYMENT_COMPLETED | ORDER_PROCESSING | COMPLETED | CANCELLED
+  status String @default("PAYMENT_PENDING")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@map("winners")
+}
+
+model Payment {
+  id String @id @default(cuid())
+
+  auctionId String
+  auction   Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  amount   BigInt
+  currency String @default("INR")
+
+  /// mock | razorpay | cashfree
+  provider          String
+  providerOrderId   String?
+  providerPaymentId String?
+
+  /// CREATED | PENDING | PAID | FAILED | REFUNDED
+  status String @default("CREATED")
+
+  /// JSON blob of provider response, for reconciliation.
+  metadata String @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@index([auctionId])
+  @@map("payments")
+}
+
+// ---------------------------------------------------------------------------
+// Engagement & operations
+// ---------------------------------------------------------------------------
+
+model Notification {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// BID_PLACED | OUTBID | ENDING_SOON | AUCTION_WON | AUCTION_LOST |
+  /// PAYMENT_REMINDER | AUCTION_STARTING | SYSTEM
+  type    String
+  title   String
+  message String
+  href    String?
+
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id String @id @default(cuid())
+
+  actorId String?
+  actor   User?   @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  action     String
+  entityType String
+  entityId   String?
+  /// JSON diff / context for the action.
+  metadata   String  @default("{}")
+  ip         String?
+
+  createdAt DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId, createdAt])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+/// Editable homepage/footer/marketing copy so content changes never need a deploy.
+model SiteContent {
+  key   String @id
+  /// JSON payload; shape depends on the key (see src/lib/content/schema.ts).
+  value String
+
+  updatedById String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("site_content")
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("newsletter_subscribers")
+}
